@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'quiz_brain.dart';
 
+QuizBrain quizBrain = QuizBrain();
 void main() => runApp(Quizzler());
 
 class Quizzler extends StatelessWidget {
@@ -25,6 +27,30 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  List<Icon> results = [];
+  int questionNumber = 0;
+  void addIcon(currentAnswer, actualAnswer) {
+    if (currentAnswer == actualAnswer) {
+      setState(() {
+        results.add(
+          Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        );
+      });
+    } else {
+      setState(() {
+        results.add(
+          Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        );
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +63,9 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                questionNumber < quizBrain.questionBank.length
+                    ? quizBrain.questionBank[questionNumber].questionText
+                    : 'End of Quiz',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -50,9 +78,10 @@ class _QuizPageState extends State<QuizPage> {
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(15.0),
-            child: FlatButton(
-              textColor: Colors.white,
-              color: Colors.green,
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+              ),
               child: Text(
                 'True',
                 style: TextStyle(
@@ -62,6 +91,13 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked true.
+                setState(() {
+                  if (questionNumber < quizBrain.questionBank.length) {
+                    addIcon(
+                        true, quizBrain.questionBank[questionNumber].answer);
+                    questionNumber++;
+                  }
+                });
               },
             ),
           ),
@@ -69,8 +105,10 @@ class _QuizPageState extends State<QuizPage> {
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(15.0),
-            child: FlatButton(
-              color: Colors.red,
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+              ),
               child: Text(
                 'False',
                 style: TextStyle(
@@ -79,12 +117,20 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked false.
+                setState(() {
+                  if (questionNumber < quizBrain.questionBank.length) {
+                    addIcon(
+                        false, quizBrain.questionBank[questionNumber].answer);
+                    questionNumber++;
+                  }
+                });
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          children: results,
+        ),
       ],
     );
   }
