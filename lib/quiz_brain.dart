@@ -33,6 +33,10 @@ class QuizBrain {
     if (_questionNumber < _questionBank.length) _questionNumber++;
   }
 
+  void restart() {
+    _questionNumber = 0;
+  }
+
   String getQuestionText() {
     return _questionNumber == _questionBank.length
         ? 'Quiz Complete'

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 void main() => runApp(Quizzler());
@@ -29,8 +30,32 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Icon> results = [];
   void addIcon(currentAnswer, actualAnswer, bool endOfQuiz) {
-    if (endOfQuiz) return;
-    quizBrain.nextQuestionNumber();
+    if (endOfQuiz) {
+      Alert(
+        context: context,
+        type: AlertType.error,
+        title: "Quiz Complete",
+        desc: "Flutter is more awesome with RFlutter Alert.",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Restart",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              setState(() {
+                quizBrain.restart();
+                results.clear();
+              });
+              Navigator.pop(context);
+            },
+            width: 120,
+          )
+        ],
+      ).show();
+      return;
+    }
+
     if (currentAnswer == actualAnswer) {
       setState(() {
         results.add(
@@ -50,6 +75,9 @@ class _QuizPageState extends State<QuizPage> {
         );
       });
     }
+    setState(() {
+      quizBrain.nextQuestionNumber();
+    });
   }
 
   @override
