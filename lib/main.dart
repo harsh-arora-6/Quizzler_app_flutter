@@ -28,8 +28,9 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> results = [];
-  int questionNumber = 0;
-  void addIcon(currentAnswer, actualAnswer) {
+  void addIcon(currentAnswer, actualAnswer, bool endOfQuiz) {
+    if (endOfQuiz) return;
+    quizBrain.nextQuestionNumber();
     if (currentAnswer == actualAnswer) {
       setState(() {
         results.add(
@@ -63,9 +64,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questionNumber < quizBrain.questionBank.length
-                    ? quizBrain.questionBank[questionNumber].questionText
-                    : 'End of Quiz',
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -92,11 +91,9 @@ class _QuizPageState extends State<QuizPage> {
               onPressed: () {
                 //The user picked true.
                 setState(() {
-                  if (questionNumber < quizBrain.questionBank.length) {
-                    addIcon(
-                        true, quizBrain.questionBank[questionNumber].answer);
-                    questionNumber++;
-                  }
+                  String endOfQuiz = quizBrain.getQuestionText();
+                  addIcon(true, quizBrain.getAnswer(),
+                      endOfQuiz == 'Quiz Complete');
                 });
               },
             ),
@@ -118,11 +115,9 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 setState(() {
-                  if (questionNumber < quizBrain.questionBank.length) {
-                    addIcon(
-                        false, quizBrain.questionBank[questionNumber].answer);
-                    questionNumber++;
-                  }
+                  String endOfQuiz = quizBrain.getQuestionText();
+                  addIcon(true, quizBrain.getAnswer(),
+                      endOfQuiz == 'Quiz Complete');
                 });
               },
             ),
